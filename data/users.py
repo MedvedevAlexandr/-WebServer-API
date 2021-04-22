@@ -18,7 +18,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(
         sqlalchemy.String, index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    photo = sqlalchemy.Column(sqlalchemy.LargeBinary)
+    photo = sqlalchemy.Column(sqlalchemy.String)
     # добавить nullable=True
     school = sqlalchemy.Column(sqlalchemy.String)
     # добавить nullable=True

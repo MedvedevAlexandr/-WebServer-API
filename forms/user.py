@@ -33,3 +33,7 @@ class RegisterDirectorForm(FlaskForm):
     school = StringField('Имя пользователя', validators=[DataRequired()])
     dob = StringField('Имя пользователя', validators=[DataRequired()])
     submit = SubmitField('Войти')
+
+
+class AddStudents(FlaskForm):
+    id = StringField('id пользователя', validators=[DataRequired()])

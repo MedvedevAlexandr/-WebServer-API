@@ -7,14 +7,6 @@
         <div style="padding-left: 17px">
             <a class="btn" href='/school/{{item.id}}'>{{ item.name_schools }}</a>
         </div>
-        <div style="padding-left: 30px">
-            <h6>Короткое название школы: {{ item.short_name_schools }}</h6>
-            {% if item.director%}
-                <h6>Директор: {{item.director}}</h6>
-            {%else%}
-                <h6>Директор: У этой школы пока, что нет директора</h6>
-            {%endif%}
-        </div>
     </div>
 {% endfor %}
 {% endblock %}

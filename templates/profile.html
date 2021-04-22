@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if current_user.roles != 'director' %}
+<a href="/iniquary" style="background: #BDBDBD; margin: 2px; padding: 2px; color: #FD3535;">получение директора школы</a>
+{% endif %}
 <div style="padding-left: 15px">
 {%if current_user.photo%}
 	{{current_user.photo}}

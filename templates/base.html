@@ -12,21 +12,10 @@
 <body>
 <header>
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/">Главная страница</a>
-        {% if current_user.roles == "admin" %}
-            <a class="navbar-brand" href="/add_director">Добавление директоров</a>
-        {% endif %}
-        {% if current_user.roles == "director" %}
-        <a class="btn btn-brand" href="/add_student">Добавление учеников</a>
-        {% endif %}
-        {% if current_user.roles == "student" %}
-            <a class="navbar-brand", href="/schedule">Расписание</a>
-            <a class="navbar-brand", href="/marks">Оценки</a>
-            <a class="navbar-brand", href="/homework">Домашнее задание</a>
-        {% endif %}
+        <a class="navbar-brand" href="/">Главная</a>
         {% if current_user.is_authenticated %}
+            <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
             <a class="navbar-brand" href="/profile">Профиль</a>
-            <a class="navbar-brand" href="/logout">Выйти</a>
         {% else %}
             <p>
                 <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
@@ -37,12 +26,7 @@
 </header>
 <!-- Begin page content -->
 <main role="main" class="container">
-    {% block login %}{% endblock %}
-    {% block register %}{% endblock %}
+    {% block content %}{% endblock %}
 </main>
-{% block content %}{% endblock %}
-{% block homework %}{% endblock %}
-{%block marks%}{%endblock%}
-{%block schedule%}{%endblock%}
 </body>
 </html>

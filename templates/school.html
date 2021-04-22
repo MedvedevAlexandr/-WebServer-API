@@ -3,6 +3,7 @@
 {%block content%}
 <div style="padding-left: 15px">
 <h2>{{school.name_schools}}</h2>
+<h4>id школы: {{school.id}}</h4>
 {% if school.director %}
 <h4>Директор школы: {{director.apprentice}} {{director.name}} {{director.patronymic}}
 {% if current_user.roles == "admin" %}
@@ -14,6 +15,13 @@
 <h4>Директор школы: нет</h4>
 {% endif %}
 <h4>Классы в школе:</h4>
+{% for i in klass %}
+<div class="col-md6 border rounded">
+        <div style="padding-left: 17px">
+            <p>{{ i.name_klass }}</p>
+        </div>
+    </div>
+{% endfor %}
 <!--
 здесь будет перечисление классов
 и если текущмй пользователь будет админом,

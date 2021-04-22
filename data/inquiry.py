@@ -12,6 +12,10 @@ class Inquiry(SqlAlchemyBase):
         sqlalchemy.Integer, primary_key=True, autoincrement=True)
     user_id = sqlalchemy.Column(
         sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'), nullable=True)
+    name_school = sqlalchemy.Column(
+        sqlalchemy.String, nullable=True)
+    schort_name_school = sqlalchemy.Column(
+        sqlalchemy.String, nullable=True)
 
     # categories = orm.relation("Category", secondary="association", backref="news")
 
