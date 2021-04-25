@@ -28,8 +28,6 @@
 <!-- Begin page content -->
 <main role="main" class="container">
     {% block content %}{% endblock %}
-    {% if current_user.roles != 'director' %}
-    {% endif %}
 <div style="padding-left: 15px">
 {%if current_user.photo%}
     <img src="../static/user_folder/{{current_user.photo}}/profile_image.jpg" width="180" height="180">
@@ -46,6 +44,7 @@
 {% if current_user.roles %}
 <h4>Права на сайте: {{current_user.roles}}</h4>
 {% endif %}
+<h4>Класс: {{student.name_klass}}</h4>
 </div>
 </main>
 </body>

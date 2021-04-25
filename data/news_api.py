@@ -19,7 +19,6 @@ def post_shedule():
         return jsonify({'error': 'Empty request'})
     elif not all(key in request.json for key in
                  ['name_klass', 'shool_id', 'date']):
-        # print('errore')
         return jsonify({'error': 'Bad request'})
     db_sess = db_session.create_session()
     klass = db_sess.query(Klass).filter(
@@ -28,7 +27,10 @@ def post_shedule():
         UsersProfile.id_users == klass.id).first()
 
     jsn = loads(usrprf.zipfiles)
-    ret_date = jsn[request.json['date']]
+    if request.json['date'] != 'all':
+        ret_date = jsn[request.json['date']]
+    else:
+        ret_date = jsn
 
     # print(request.json['name_klass'],
     #       request.json['shool_id'], request.json['date'])

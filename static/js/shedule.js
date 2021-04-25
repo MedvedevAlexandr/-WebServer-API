@@ -30,7 +30,8 @@ submit.addEventListener('click', (Event) => {
 	  .then((data) => {
 	    console.log(data[date.value]);
 	    data[date.value].map((item, index) => (
-		  document.getElementById('tab').innerHTML += `<tr><td style="width: 38px;">&nbsp; ${++index}</td><td style="width: 151px;">${item.lesson}</td><td style="width: 390px;">${item.homework}</td></tr>`
+	    	console.log(item.lesson)
+			document.getElementById('tab').innerHTML += `<tr><td style="width: 38px;">&nbsp; ${++index}</td><td style="width: 151px;">${item.lesson}</td><td style="width: 390px;">${item.homework}</td></tr>`
 		));
 	  });
 	// alert(date.value, klass.value);

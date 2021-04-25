@@ -7,7 +7,7 @@
 {% if school.director %}
 <h4>Директор школы: {{director.apprentice}} {{director.name}} {{director.patronymic}}
 {% if current_user.roles == "admin" %}
-<a class="btn" href='/delete_director/{{school.id}}'>Удалить директора этой школы</a>
+<a class="btn" href='/control-director/{{director.id}}/del'>Удалить директора этой школы</a>
 {% endif %}
 </h4>
 <h4>Электронная почта директора: {{director.email}}</h4>

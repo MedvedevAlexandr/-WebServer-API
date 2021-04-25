@@ -108,7 +108,6 @@ def reqister():
             patronymic=form.patronymic.data,
             email=form.email.data,
             roles='guest'
-            # about=form.about.data
         )
         user.set_password(form.password.data)
         db_sess.add(user)
@@ -137,9 +136,16 @@ def profile():
     if current_user.roles == 'admin':
         return render_template('profile_admin.html')
     elif current_user.roles == 'director':
-        return render_template('profile_director.html')
+        db_sess = db_session.create_session()
+        school = db_sess.query(Schools).filter(
+            Schools.director == current_user.id).first()
+        print(school.name_schools)
+        return render_template('profile_director.html', school=school)
     elif current_user.roles == 'student':
-        return render_template('profile_student.html')
+        db_sess = db_session.create_session()
+        student = db_sess.query(Student).filter(
+            Student.id == current_user.id).first()
+        return render_template('profile_student.html', student=student)
     elif current_user.roles == 'guest':
         return render_template('profile.html')
 
@@ -157,17 +163,17 @@ def edit_profile():
                 user.photo = str(uuid.uuid4())
             db_sess.commit()
 
-            if os.path.exists(f"{UPLOAD_FOLDER}/{current_user.photo}"):
-                file.save(os.path.join(f"{UPLOAD_FOLDER}/{current_user.photo}", 'profile_image.jpg'))
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(
+                User.id == current_user.id).first()
+            if os.path.exists(f"{UPLOAD_FOLDER}/{user.photo}"):
+                file.save(os.path.join(f"{UPLOAD_FOLDER}/{user.photo}", 'profile_image.jpg'))
             else:
-                os.mkdir(f"{UPLOAD_FOLDER}/{current_user.photo}")
-                file.save(os.path.join(f"{UPLOAD_FOLDER}/{current_user.photo}", 'profile_image.jpg'))
+                print('create folder', user.photo)
+                os.mkdir(f"{UPLOAD_FOLDER}/{user.photo}")
+                file.save(os.path.join(f"{UPLOAD_FOLDER}/{user.photo}", 'profile_image.jpg'))
 
         return render_template('edit_profile_director.html')
-    # elif current_user.roles == 'student':
-        # return render_template('edit_profile_student.html')
-    # elif current_user.roles == 'guest':
-    #     return render_template('profile.html')
 
 
 @app.route('/add-director')
@@ -229,11 +235,16 @@ def control_director(id, act):
         user.roles = 'director'
         db_sess.commit()
         inquiry = db_sess.query(Inquiry).filter(Inquiry.id == id).first()
-        school = Schools(
-            name_schools=inquiry.name_school,
-            director=id
-        )
-        db_sess.add(school)
+        school = db_sess.query(Schools).filter(
+            Schools.name_schools == inquiry.name_school).first()
+        if school:
+            school.director = id
+        else:
+            school = Schools(
+                name_schools=inquiry.name_school,
+                director=id
+            )
+            db_sess.add(school)
         db_sess.commit()
         school_id = db_sess.query(Schools).filter(
             Schools.director == id).first()
@@ -247,7 +258,7 @@ def control_director(id, act):
             db_sess.delete(inquiry)
             db_sess.commit()
         except:
-            print('errore delete inquiry')
+            print('error delete inquiry')
         return redirect('/add-director')
     elif act == 'del':
         db_sess = db_session.create_session()
@@ -336,6 +347,28 @@ def school_info(id):
 def request_schedule():
     if current_user.roles == 'director':
         if request.method == 'POST':
+            s = request.get_json()[0]
+            db_sess = db_session.create_session()
+            schoo_id = db_sess.query(Schools).filter(
+                Schools.director == current_user.id).first()
+
+            klass = db_sess.query(Klass).filter(
+                Klass.shool_id == schoo_id.id and Klass.name_klass == request.get_json()[0]['klass']).first()
+
+            usersprofile = db_sess.query(UsersProfile).filter(
+                UsersProfile.id_users == klass.id).first()
+
+            ss = loads(usersprofile.zipfiles)
+            if s['date'] not in ss:
+                print('расписание добавлено')
+                ss[s['date']] = s['changes']
+            else:
+                print('расписание изменено')
+                ss[s['date']] = s['changes']
+            s_save = dumps(ss)
+            usersprofile.zipfiles = s_save
+            db_sess.commit()
+            # print(request.get_json())
             return redirect('/edit-schedule')
 
 
@@ -352,15 +385,20 @@ def edit_schedule():
 
         if request.method == 'POST':
             klass = db_sess.query(Klass).filter(
-                Klass.name_klass == request.get_json()['klass'] and Klass.director == current_user.id).first()
+                Klass.shool_id == schoo_id.id and Klass.name_klass == request.get_json()['klass']).first()
 
             usersprofile = db_sess.query(UsersProfile).filter(
                 UsersProfile.id_users == klass.id).first()
             ss = loads(usersprofile.zipfiles)
 
-            # print(request.get_json()['klass'])
+            d = request.get_json()['date']
             # print(ss)
-            return ss
+            if d in ss:
+                print(ss, 'in')
+                return ss
+            else:
+                print('not in')
+                return {}
         return render_template("edit-schedule.html", klass=klass)
     else:
         return render_template("authorization_error.html")
@@ -383,15 +421,14 @@ def stundents_schedule():
 
         klass = db_sess.query(Klass).filter(Klass.shool_id == schoo_id.id)
         if request.method == 'POST':
-            klass = db_sess.query(Klass).filter(
-                Klass.name_klass == request.get_json()['klass'] and Klass.director == current_user.id).first()
-
+            klass_s = db_sess.query(Klass).filter(
+                Klass.shool_id == schoo_id.id and Klass.name_klass == request.get_json()['klass']).first()
+            # print(klass_s.id, schoo_id.id)
             usersprofile = db_sess.query(UsersProfile).filter(
-                UsersProfile.id_users == klass.id).first()
+                UsersProfile.id_users == klass_s.id).first()
             ss = loads(usersprofile.zipfiles)
-
-            # print(request.get_json()['klass'])
             # print(ss)
+
             return ss
         return render_template("schedule.html", klass=klass)
     elif current_user.roles == 'student':
@@ -399,22 +436,34 @@ def stundents_schedule():
         if request.method == 'POST':
             student = db_sess.query(Student).filter(
                 Student.id == current_user.id).first()
-            # klass = db_sess.query(Klass).filter(
-            # Klass.name_klass == request.get_json()['klass'] and Klass.director == current_user.id).first()
-
+            # print(student.klass_id)
             usersprofile = db_sess.query(UsersProfile).filter(
                 UsersProfile.id_users == student.klass_id).first()
             ss = loads(usersprofile.zipfiles)
+            # print(ss)
             return ss
         return render_template("shedule_student.html")
 
 
-@app.route("/marks")
-@login_required
-def students_marks():
-    return render_template("marks.html")
+@app.route("/api/documentation")
+def api_documentation():
+    return render_template("api_documentation.html")
+
+
+# @app.route('/class-list', methods=['GET', 'POST'])
+# @login_required
+# def class_list():
+#     if request.method == 'POST':
+#         db_sess = db_session.create_session()
+#         schoo_id = db_sess.query(Schools).filter(
+#                 Schools.director == current_user.id).first()
+#         student = db_sess.query(Student).filter(
+#                     Student.school_id == schoo_id.id and Student.name_klass == request.get_json()['klass'])
+#         s = []
+#         for i in student:
+#             s.append(i.id)
+#     return render_template('class_list.html')
 
 
 if __name__ == '__main__':
-    # db_session.global_init("db/blogs.db")
     main()

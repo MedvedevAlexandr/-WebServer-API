@@ -16,7 +16,7 @@
         <a class="navbar-brand" href="/">Главная</a>
         <a class="btn btn-primary" href="/add-student">Добавление учеников</a>
         <a class="btn btn-primary" href="/add-klass">Добавление классов</a>
-        <a class="btn btn-primary" href="#">Редактирование расписания</a>
+        <a class="btn btn-primary" href="/edit-schedule">Редактирование расписания</a>
         <a class="btn btn-primary" href="/edit-profile">Редактирование профиля</a>
         {% if current_user.is_authenticated %}
             <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
